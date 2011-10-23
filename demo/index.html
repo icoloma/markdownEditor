@@ -1,20 +1,26 @@
 <!doctype html>
 <html>
 <head>
-	<title>Markdownjs Editor</title>
+	<title>Markdown Editor</title>
 	<link rel="stylesheet" href="reset.css">
+	<link rel="stylesheet" href="base.css">
+	<link rel="stylesheet" href="../src/markdownEditor.css">
 </head>
 <body>
 
-	<div id="#container">
+	<h1>Markdownjs sandbox</h1>
+	<div class="cols"></div>
+	<div class="rows"></div>
 
-	</div>
-
-	<script src="showdown.js"></script>
-	<script src="jquery.js"></script>
-	<script src="../src/jquery.markdown.js"></script>
+	<script src="../lib/showdown.js"></script>
+	<script src="../lib/jquery.js"></script>
+	<script src="../lib/jquery-fieldselection.js"></script>
+	<script src="../src/jquery.markdownEditor.js"></script>
 	<script>
-	$('#container').markdownEditor();
+	$('.cols').markdownEditor({
+		value: 'Lots of *stuff* to try'
+	});
+	$('.rows').markdownEditor();
 	</script>
 </body>
 </html>
