@@ -78,7 +78,7 @@ $.fn.markdownEditor = function(options) {
 	/**
 	 * Get the selected text
 	 */
-	vat getSelection = function() {
+	var getSelection = function() {
 		var s = document.getSelection || window.getSelection;
 		return s? s() : document.selection.createRange().text;
 	}
