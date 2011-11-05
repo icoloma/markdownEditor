@@ -4,23 +4,60 @@
 	<title>Markdown Editor</title>
 	<link rel="stylesheet" href="reset.css">
 	<link rel="stylesheet" href="base.css">
+	<link rel="stylesheet" href="qunit.css">
 	<link rel="stylesheet" href="../src/markdownEditor.css">
 </head>
 <body>
 
-	<h1>Markdownjs sandbox</h1>
-	<div class="cols"></div>
-	<div class="rows"></div>
+	<div style="float: left; width: 600px">
+		<h1>Markdownjs sandbox</h1>
+		<div class="cols"></div>
+		<div class="rows"></div>
+	</div>
+	<div style="float: left; width: 600px">
+		<h1 id="qunit-header">Markdown QUnit tests</h1>
+		<h2 id="qunit-banner"></h2>
+		<div id="qunit-testrunner-toolbar"></div>
+		<h2 id="qunit-userAgent"></h2>
+		<ol id="qunit-tests"></ol>
+		<div id="qunit-fixture">
+			<div id="test-markdown-container"></div>
+		</div>
+	</div>
+	  
 
+	<script src="qunit.js"></script>
 	<script src="../lib/showdown.js"></script>
 	<script src="../lib/jquery.js"></script>
-	<script src="../lib/jquery-fieldselection.js"></script>
 	<script src="../src/jquery.markdownEditor.js"></script>
 	<script>
+	// visual testing
 	$('.cols').markdownEditor({
-		value: 'Lots of *stuff* to try'
+		value: 'Lots of *stuff* to try',
 	});
-	$('.rows').markdownEditor();
+
+	// qunit test
+	var opts = {
+		internals: {}
+	};
+	$('#test-markdown-container').markdownEditor(opts);
+
+	var i = opts.internals;
+	var e = $('#test-markdown-container .markdown-editor')[0];
+
+	// $('.rows').markdownEditor();
+	test("history test", function() {
+		e.value = 'foo';
+		i.pushHistory();
+		equal(i.history.length, 2);
+		e.value = 'bar';
+		i.popHistory();
+		equal(e.value, "foo", "popHistory() should have retrieved the previous value" );
+		i.popHistory();
+		e.value("xxx");
+		i.pushHistory();
+		equal(i.history.length, 1);
+	});
 	</script>
 </body>
 </html>
