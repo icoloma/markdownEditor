@@ -1,0 +1,57 @@
+.cols .markdown-editor, .cols .markdown-preview {
+	width: 250px;
+	padding: 10px;
+	display: inline-block;
+	height: 350px;
+	vertical-align: top;
+}
+.cols .markdown-preview {
+	margin-left: 10px;
+}
+.markdown-preview {
+	background: transparent url(markdown-preview-bg.gif) repeat 0 20px;
+}
+.rows .markdown-editor, .rows .markdown-preview {
+	width: 400px;
+	padding: 10px;
+	height: 200px;
+}
+.markdown-editor {
+	resize: vertical;
+}
+
+.markdown-toolbar {
+	border-top: 3px solid #eee;
+	border-bottom: 3px solid #eee;
+}
+.md-btn {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	margin: 0 2px;
+	border: 1px solid #fff;
+	border-radius: 2px;
+	background: #fff url(markdown-sprite.png) no-repeat 0 0;
+	padding: 4px;
+}
+.md-btn[disabled] {
+	opacity: .3;
+}
+.md-btn:hover:not([disabled]) {
+	border-color: #ccc;
+	background-color: #eee;
+}
+.md-btn-i { background-position: -24px 0; }
+.md-btn-a { background-position: -48px 0; }
+.md-btn-blockquote { background-position: -72px 0; }
+.md-btn-pre { background-position: -96px 0; }
+.md-btn-img { background-position: -120px 0; }
+.md-btn-h { background-position: -144px 0; }
+.md-btn-ol { background-position: -168px 0; }
+.md-btn-ul { background-position: -192px 0; }
+.md-btn-undo { background-position: -216px 0; }
+.md-btn-redo { background-position: -240px 0; }
+.md-btn-help { background-position: -264px 0; }
+
+/** if you are using jquery-ui, you already have this */
+.ui-helper-hidden-accessible { position: absolute !important; clip: rect(1px 1px 1px 1px); clip: rect(1px,1px,1px,1px); }

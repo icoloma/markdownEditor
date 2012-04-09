@@ -7,6 +7,8 @@
     <meta name="description" content="MarkdownEditor : A jQuery-based markdown javascript editor" />
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="js/markdownEditor.css">
+    <link href="js/google-code-prettify/prettify.css" type="text/css" rel="stylesheet">
 
     <title>MarkdownEditor</title>
   </head>
@@ -19,7 +21,7 @@
           <a id="forkme_banner" href="https://github.com/icoloma/markdownEditor">Fork Me on GitHub</a>
 
           <h1 id="project_title">MarkdownEditor</h1>
-          <h2 id="project_tagline">A jQuery-based markdown javascript editor</h2>
+          <h2 id="project_tagline">A jQuery-based markdown JavaScript editor</h2>
 
           <section id="downloads">
             <a class="zip_download_link" href="https://github.com/icoloma/markdownEditor/zipball/master">Download this project as a .zip file</a>
@@ -33,48 +35,32 @@
       <section id="main_content" class="inner">
         <h1>Yet Another Markdown Editor</h1>
 
-<p>This is another markdown editor that is based on Showdown, but <strong>NOT</strong> on WMD. The idea is to make a lightweight, jQuery-based editor with most of the features but none of the baggage. The result is an uncompressed 8KB file.</p>
+<p>This is another markdown editor based on Showdown, but <strong>NOT</strong> on WMD. The idea is to make a lightweight, jQuery-based editor with most of the features but none of the baggage. The result is an uncompressed 8KB file.</p>
 
-<p>The simplest example of use:</p>
+<pre class="prettyprint"><code>&lt;div class="cols">&lt;/div>
 
-<pre><code>$('.container').markdownEditor({
-  value: '##Yet Another Markdown Editor##\n\n' +
-    'This is another markdown editor that is based on Showdown, but **NOT** on WMD'
+&lt;script src="js/jquery.js">&lt;/script>
+&lt;script src="js/showdown.js">&lt;/script>
+&lt;script src="js/jquery.markdownEditor.js">&lt;/script>
+&lt;script>
+$('.container').markdownEditor({
+  value: '##Yet Another Markdown Editor##(insert yadda yadda here)'
 });
+&lt;/script>
 </code></pre>
 
-<h2>Features</h2>
+<h2>A live example</h2>
 
-<ul>
-<li>All the typical buttons are there: bold, italics, etc.</li>
-<li>Undo and redo</li>
-<li>Keyboard shortcuts</li>
-<li>Internationalized button (hover) titles</li>
-</ul><h2>The options</h2>
+<div class="cols"></div>
 
-<p>They are not that many:</p>
 
-<ul>
-<li>
-<strong>historyRate</strong>: the number of milliseconds to introduce entries in the "undo" registry. If the user starts writing, it will wait this amount of time before introducing a new entry in the history. Default is 2000.</li>
-<li>
-<strong>renderRate</strong>: the same concept applied to rendering preview HTML. The default is 300.</li>
-<li>
-<strong>buttons</strong>: the list of buttons to display. The default is <code>[ 'b', 'i', 'a', 'blockquote', 'pre', 'img', 'h', 'ol', 'ul', 'undo', 'redo', 'help' ]</code>
-</li>
-<li>
-<strong>resources</strong>: the list of labels to use, in case you need i18n.</li>
-</ul><h2>Bugs</h2>
-
-<p>A'plenty. But we are using it for a real site, and so far are quite happy.</p>
       </section>
     </div>
 
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
       <footer class="inner">
-        <p class="copyright">MarkdownEditor maintained by <a href="https://github.com/icoloma">icoloma</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+        <p class="copyright">MarkdownEditor by <a href="https://github.com/icoloma">icoloma</a> and <a href="https://github.com/ccoloma">ccoloma</a></p>
       </footer>
     </div>
 
@@ -89,6 +75,23 @@
             } catch(err) {}
           </script>
 
+          <script src="js/google-code-prettify/prettify.js"></script>
 
+          <!-- markdownEditor starts Here -->
+          <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+          <script src="js/showdown.js"></script>
+          <script src="js/jquery.markdownEditor.js"></script>
+          <script>
+          prettyPrint();
+          $('.cols').markdownEditor({
+                value: '##MarkdownEditor##\n\n' +
+                        '[Link me!](http://icanhascheezburger.com "Show me the kitties")\n\n' +
+                        'Lots of *stuff* to **test**, like quotes:\n\n' +
+                        '> Two things are infinite: the universe and human stupidity; and I am not sure about the universe.\n\n' +
+                        'Code \n `[foo, bar, beer]` \n\n' +
+                        'UnorderedLists \n\n* Item1 \n* Item2\n\n' +
+                        'OrderedLists \n\n1. Item1 \n2. Item2'
+        });
+          </script>
   </body>
 </html>
