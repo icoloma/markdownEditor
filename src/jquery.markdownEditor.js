@@ -30,63 +30,47 @@ Options:
 * buttons: a list of buttons to use
 * value: The initial value to use
 * historyRate: the amount of time (in milliseconds) without user input that triggers a new entry in the history
+* renderRate: the amount of time (in milliseconds) without user input that triggers a re-render HTML
 */
 $.fn.markdownEditor = function(options) {
 	
-	// container of the whole thing
-	var $container,
-
-	// editor
-	$editor,
-
-	// preview
-	$preview,
-
-	// buttonbar
-	$toolbar,
-
-	// history of text modifications (String)
-	history = [],
-
-	// current step in history
-	hcursor = 0,
-
-	// timestamp of the last history entry
-	htimestamp = 0,
-
-	// ShowDown converter
-	converter = new Showdown.converter();
-
 	options = $.extend({
 		historyRate: 2000,
+		renderRate: 300,
 		buttons: [ 'b', 'i', 'a', 'blockquote', 'pre', 'img', 'h', 'ol', 'ul', 'undo', 'redo', 'help' ],
 		resources: {
-			'markdown-button-b': 'Bold',
-			'markdown-button-i': 'Italic',
-			'markdown-button-a': 'Create link',
-			'markdown-button-blockquote': 'Quote',
-			'markdown-button-pre': 'Code',
-			'markdown-button-img': 'Add image',
-			'markdown-button-h': 'Header',
-			'markdown-button-ol': 'Numbered list',
-			'markdown-button-ul': 'Bullet list',
-			'markdown-button-undo': 'Undo',
-			'markdown-button-redo': 'Redo',
-			'markdown-button-help': 'Help'
+			'md-btn-b': 'Bold',
+			'md-btn-i': 'Italic',
+			'md-btn-a': 'Create link',
+			'md-btn-blockquote': 'Quote',
+			'md-btn-pre': 'Code',
+			'md-btn-img': 'Add image',
+			'md-btn-h': 'Header',
+			'md-btn-ol': 'Numbered list',
+			'md-btn-ul': 'Bullet list',
+			'md-btn-undo': 'Undo',
+			'md-btn-redo': 'Redo',
+			'md-btn-help': 'Help'
 		}
 	}, options);
-	$container = $('<div class="markdown-container"><div class="markdown-toolbar"></div><textarea class="markdown-editor"></textarea><div class="markdown-preview"></div></div>');
-	$toolbar = $container.find('.markdown-toolbar');
-	$editor = $container.find('.markdown-editor');
-	$preview = $container.find('.markdown-preview');
 	
-	/**
-	 * Get the selected text
-	 * /
-	var getSelection = function() {
-		var s = document.getSelection || window.getSelection;
-		return s? s() : document.selection.createRange().text;
-	}*/
+	var 
+
+		// history of text modifications (String [])
+		history = [],
+
+		// current step in history
+		hcursor = 0,
+
+		// ShowDown converter
+		converter = new Showdown.converter(),
+
+		// container of the whole thing
+		$container = $('<div class="markdown-container"><div class="markdown-toolbar"></div><textarea class="markdown-editor"></textarea><div class="markdown-preview"></div></div>'),
+		$toolbar = $container.find('.markdown-toolbar'),
+		$editor = $container.find('.markdown-editor'),
+		$preview = $container.find('.markdown-preview')
+		;
 
 	/*
 	 * getSelection extracted from fieldSelection jQuery plugin by Alex Brem <alex@0xab.cd>
@@ -162,46 +146,76 @@ $.fn.markdownEditor = function(options) {
 			e.value += text;
 		};
 
+	/**
+		Pushes a new entry in the history.
+		New entries are pushed only 
+	*/
+	var historyID = 0;
 	var pushHistory = function() {
-		history[hcursor++] = e.value;
-		if (history.length > hcursor) { // if 'undo' and then write something, replace the future entries
-			history = history.slice(0, hcursor);
-			$toolbar.find('.markdown-button-redo').attr('disabled');
-		}
+		clearTimeout(historyID);
+		historyID = setTimeout(function() {
+			if (e.value != history[hcursor]) {
+				history[++hcursor] = e.value;
+				console.log("push " + hcursor + " " + e.value);
+				if (history.length > hcursor + 1) { // if 'undo' and then write something, replace the future entries
+					history = history.slice(0, hcursor + 1);
+					$redoBtn.attr('disabled', '');
+				}
+			}
+		}, options.historyRate);
+		$undoBtn.removeAttr('disabled');
+		renderHTML();
 	}
 
+	/**
+		undo an entry in the history
+	*/
 	var popHistory = function() {
-		if (hcursor > 0) {
+		if (hcursor) {
 			e.value = history[--hcursor];
-			onChange();
-		}
+			console.log("pop " + hcursor + " " + e.value);
+			$redoBtn.removeAttr('disabled');
+			renderHTML();
+		} 
+		hcursor || $undoBtn.attr('disabled', '');
 	}
 
+	/**
+		redo an entry in the history 
+	*/
 	var redoHistory = function() {
-		if (hcursor < history.length) {
-			e.value = history[hcursor++];
-			hcursor == history.length && $toolbar.find('.markdown-button-redo').attr('disabled');
-			onChange();
+		if (hcursor < history.length - 1) {
+			e.value = history[++hcursor];
+			console.log("redo " + hcursor + " " + e.value);
+			if (hcursor === history.length - 1)
+				$redoBtn.attr('disabled', '');
+			renderHTML();
 		}
 	}
 
 	/**
-	 * Update the preview container with fresh user input
-	 */
-	var onChange = function(event) {
-		var html = converter.makeHtml(e.value);
-		var newt = $.now();
-		if (newt - htimestamp > options.historyRate)
-			pushHistory();
-		htimestamp = newt;
-		$preview.html(html);
+		Update the preview container with fresh user input
+		@param sync {boolean} true to do the render synchronously. Otherwise, the call will be throttled
+	*/
+	var renderID = 0;
+	var renderHTML = function(sync) {
+		if (!sync) {
+			clearTimeout(renderID);
+			renderID = setTimeout(function() {
+				$preview.html(converter.makeHtml(e.value));
+			}, options.renderRate);
+		} else {
+			$preview.html(converter.makeHtml(e.value));
+		}
 	}
 
 	// insert buttons
 	$.each(options.buttons, function(index, button) {
-		var name = 'markdown-button-' + button;
-		$toolbar.append('<a class="markdown-button ' + name + '" title="' + options.resources[name] + '"><span class="ui-helper-hidden-accessible">' + options.resources[name] + '</span></a>');
+		var name = 'md-btn-' + button;
+		$toolbar.append('<a class="md-btn ' + name + '" title="' + options.resources[name] + '"><span class="ui-helper-hidden-accessible">' + options.resources[name] + '</span></a>');
 	});
+	var $undoBtn = $toolbar.find('.md-btn-undo');
+	var $redoBtn = $toolbar.find('.md-btn-redo');
 
 	/**
 		options: 
@@ -224,65 +238,58 @@ $.fn.markdownEditor = function(options) {
 	};
 
 	$toolbar
-		.on('click', '.markdown-button-b', function() {
+		.on('click', '.md-btn-b', function() {
 			updateSelection({
 				mark: '**', 
 				regex: /^\*\*.*\*\*$/
 			});
-			onChange();
 			pushHistory();
 		})
-		.on('click', '.markdown-button-i', function() {
+		.on('click', '.md-btn-i', function() {
 			updateSelection({
 				mark: '*', 
 				regex: /^\*(\*\*)?[^*]*(\*\*)?\*$/
 			});
-			onChange();
 			pushHistory();
 		})
-		.on('click', '.markdown-button-a', function() {
+		.on('click', '.md-btn-a', function() {
 			var selection = getSelection().text;
 			replaceSelection('[' + selection + '](' + selection + ' "' + selection + '")');
-			onChange();
 			pushHistory();
 		})
-		.on('click', '.markdown-button-pre', function() {
+		.on('click', '.md-btn-pre', function() {
 			updateSelection({
 				mark: '`', 
 				regex: /^`[^`]*`$/
 			});
-			onChange();
 			pushHistory();
 		})
-		.on('click', '.markdown-button-blockquote', function() {
+		.on('click', '.md-btn-blockquote', function() {
 			updateSelection({
 				mark: '\n>', 
 				regex: /^\n>.*$/, 
 				notBilateral: true
 			});
-			onChange();
 			pushHistory();
 		})
-		.on('click', '.markdown-button-h', function() {
+		.on('click', '.md-btn-h', function() {
 			updateSelection({
 				mark: '#', 
 				regex: /^#.*#$/
 			});
-			onChange();
 			pushHistory();
 		})
-		.on('click', '.markdown-button-ul', function() {
+		.on('click', '.md-btn-ul', function() {
 			var set = updateSelection({
 				mark: '\n* ', 
 				regex: /^\n\*\s.*$/, 
 				notBilateral: true
 			});
-			onChange();
 			pushHistory();
 		})
-		.on('click', '.markdown-button-undo', popHistory)
-		.on('click', '.markdown-button-redo', redoHistory)
-		.on('click', '.markdown-button-help', function() {
+		.on('click', '.md-btn-undo', popHistory)
+		.on('click', '.md-btn-redo', redoHistory)
+		.on('click', '.md-btn-help', function() {
 			window.open('http://en.wikipedia.org/wiki/Markdown');
 		})
 		;
@@ -297,8 +304,13 @@ $.fn.markdownEditor = function(options) {
 
 	// insert current value
 	options.value && $editor.val(options.value);
-	$editor.input(onChange);
-	onChange();
+	$editor.input(pushHistory);
+	
+	// initialize history
+	history[hcursor] = e.value;
+	renderHTML(true);
+	$redoBtn.attr('disabled', '')
+	$undoBtn.attr('disabled', '')
 
 	this.html($container);
 
