@@ -266,7 +266,8 @@ $.fn.markdownEditor = function(options) {
 		.on('click', '.markdown-button-h', function() {
 			updateSelection({
 				mark: '#', 
-				regex: /^#.*#$/
+				regex: /^#.*$/,
+				notBilateral: true
 			});
 			onChange();
 			pushHistory();
