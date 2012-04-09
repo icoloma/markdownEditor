@@ -200,21 +200,91 @@ $.fn.markdownEditor = function(options) {
 	// insert buttons
 	$.each(options.buttons, function(index, button) {
 		var name = 'markdown-button-' + button;
-		$toolbar.append('<a href="#" class="markdown-button ' + name + '" title="' + options.resources[name] + '"><span class="ui-helper-hidden-accessible">' + options.resources[name] + '</span></a>');
-	})
+		$toolbar.append('<a class="markdown-button ' + name + '" title="' + options.resources[name] + '"><span class="ui-helper-hidden-accessible">' + options.resources[name] + '</span></a>');
+	});
+
+	/**
+		options: 
+		- mark to set/remove. i.e.: '**'
+		- pattern. Pattern to check if the mark must be set or removed
+		- notBilateral: add the mark only as prefix, not suffix. Default is false.
+	*/
+	var updateSelection = function(options) {
+		var selection = getSelection().text;
+		var value = options.mark + 
+			selection + 
+			(options.notBilateral? '' : options.mark)
+		;
+		if (options.regex.exec(selection)) {
+			value = selection.substring(options.mark.length, 
+				(options.notBilateral? selection.length : selection.length - options.mark.length)
+			);
+		}
+		replaceSelection(value);
+	};
+
 	$toolbar
 		.on('click', '.markdown-button-b', function() {
-			replaceSelection('**' + getSelection().text + '**');
+			updateSelection({
+				mark: '**', 
+				regex: /^\*\*.*\*\*$/
+			});
 			onChange();
 			pushHistory();
 		})
 		.on('click', '.markdown-button-i', function() {
-			replaceSelection('*' + getSelection().text + '*');
+			updateSelection({
+				mark: '*', 
+				regex: /^\*(\*\*)?[^*]*(\*\*)?\*$/
+			});
+			onChange();
+			pushHistory();
+		})
+		.on('click', '.markdown-button-a', function() {
+			var selection = getSelection().text;
+			replaceSelection('[' + selection + '](' + selection + ' "' + selection + '")');
+			onChange();
+			pushHistory();
+		})
+		.on('click', '.markdown-button-pre', function() {
+			updateSelection({
+				mark: '`', 
+				regex: /^`[^`]*`$/
+			});
+			onChange();
+			pushHistory();
+		})
+		.on('click', '.markdown-button-blockquote', function() {
+			updateSelection({
+				mark: '\n>', 
+				regex: /^\n>.*$/, 
+				notBilateral: true
+			});
+			onChange();
+			pushHistory();
+		})
+		.on('click', '.markdown-button-h', function() {
+			updateSelection({
+				mark: '#', 
+				regex: /^#.*#$/
+			});
+			onChange();
+			pushHistory();
+		})
+		.on('click', '.markdown-button-ul', function() {
+			var set = updateSelection({
+				mark: '\n* ', 
+				regex: /^\n\*\s.*$/, 
+				notBilateral: true
+			});
 			onChange();
 			pushHistory();
 		})
 		.on('click', '.markdown-button-undo', popHistory)
 		.on('click', '.markdown-button-redo', redoHistory)
+		.on('click', '.markdown-button-help', function() {
+			window.open('http://en.wikipedia.org/wiki/Markdown');
+		})
 		;
 
 	// this for testing only

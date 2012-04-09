@@ -33,7 +33,13 @@
 	<script>
 	// visual testing
 	$('.cols').markdownEditor({
-		value: 'Lots of *stuff* to try',
+		value: '##MarkdownEditor##\n\n' +
+			'[Link me!](http://github.com/icoloma/markdownEditor "MarkdownEditor")\n\n' +
+			'Lots of *stuff* to **try**\n\n' +
+			'Quotes \n> Two things are infinite: the universe and human stupidity; and I am not sure about the the universe.\n\n' +
+			'Code \n `<div>Your code goes here</div>` \n\n' +
+			'UnorderedLists \n\n* Item1 \n* Item2\n\n' +
+			'OrderedLists \n\n1. Item1 \n2. Item2'
 	});
 
 	// qunit test

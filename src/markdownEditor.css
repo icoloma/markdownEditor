@@ -1,8 +1,8 @@
 .cols .markdown-editor, .cols .markdown-preview {
-	width: 200px;
+	width: 250px;
 	padding: 10px;
 	display: inline-block;
-	height: 200px;
+	height: 350px;
 	vertical-align: top;
 }
 .rows .markdown-editor, .rows .markdown-preview {
