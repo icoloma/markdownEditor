@@ -1,15 +1,7 @@
 # Yet Another Markdown Editor
 This is another markdown editor that is based on Showdown, but **NOT** on WMD. The idea is to make a lightweight, jQuery-based editor with most of the features but none of the baggage. The result is an uncompressed 8KB file.
 
-The simplest example of use:
-
-```
-$('.container').markdownEditor({
-  value: '##Yet Another Markdown Editor##\n\n' +
-    'This is another markdown editor that is based on Showdown, but **NOT** on WMD'
-});
-```
-
+You can see a live demo [here](http://icoloma.github.com/markdownEditor).
 ## Features
 
 * All the typical buttons are there: bold, italics, etc.
