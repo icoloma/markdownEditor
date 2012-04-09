@@ -1,5 +1,5 @@
 .cols .markdown-editor, .cols .markdown-preview {
-	width: 250px;
+	width: 290px;
 	padding: 10px;
 	display: inline-block;
 	height: 350px;
@@ -10,6 +10,7 @@
 }
 .markdown-preview {
 	background: transparent url(markdown-preview-bg.gif) repeat 0 20px;
+	overflow: hidden;
 }
 .rows .markdown-editor, .rows .markdown-preview {
 	width: 400px;
