@@ -5,6 +5,12 @@
 	height: 350px;
 	vertical-align: top;
 }
+.cols .markdown-preview {
+	margin-left: 10px;
+}
+.markdown-preview {
+	background: transparent url(markdown-preview-bg.gif) repeat 0 20px;
+}
 .rows .markdown-editor, .rows .markdown-preview {
 	width: 400px;
 	padding: 10px;
@@ -29,7 +35,7 @@
 	padding: 4px;
 }
 .md-btn[disabled] {
-	opacity: .5;
+	opacity: .3;
 }
 .md-btn:hover:not([disabled]) {
 	border-color: #ccc;
