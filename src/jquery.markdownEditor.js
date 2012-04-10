@@ -59,7 +59,7 @@ $.fn.markdownEditor = function(options) {
 
 	options = $.extend({
 		historyRate: 2000,
-		buttons: [ 'b', 'i', 'a', 'blockquote', 'pre', 'img', 'h', 'ol', 'ul', 'undo', 'redo', 'help' ],
+		buttons: [ 'b', 'i', 'a', 'blockquote', 'pre', 'img', 'h', 'ul', 'undo', 'redo', 'help' ],
 		resources: {
 			'markdown-button-b': 'Bold',
 			'markdown-button-i': 'Italic',
@@ -68,17 +68,36 @@ $.fn.markdownEditor = function(options) {
 			'markdown-button-pre': 'Code',
 			'markdown-button-img': 'Add image',
 			'markdown-button-h': 'Header',
-			'markdown-button-ol': 'Numbered list',
 			'markdown-button-ul': 'Bullet list',
 			'markdown-button-undo': 'Undo',
 			'markdown-button-redo': 'Redo',
 			'markdown-button-help': 'Help'
 		}
-	}, options);
-	$container = $('<div class="markdown-container"><div class="markdown-toolbar"></div><textarea class="markdown-editor"></textarea><div class="markdown-preview"></div></div>');
-	$toolbar = $container.find('.markdown-toolbar');
-	$editor = $container.find('.markdown-editor');
-	$preview = $container.find('.markdown-preview');
+	}, options),
+	$container = $('<div class="markdown-container">' +
+		'<div class="markdown-toolbar"></div>' +
+		'<div class="linkForm" style="display: none;">' +
+			'<input placeholder="http://" title="href">' +
+			'<input placeholder="Link title">' +
+			'<a class="markdown-button accept" title="Accept">V</a>' +
+			'<a class="markdown-button" title="Cancel">&#xd7;</a>' +
+		'</div>' +
+		'<textarea class="markdown-editor"></textarea>' +
+		'<div class="markdown-preview"></div>' +
+		'</div>'
+	),
+	$toolbar = $container.find('.markdown-toolbar'),
+	$editor = $container.find('.markdown-editor'),
+	$linkForm = $container.find('.linkForm'),
+	$preview = $container.find('.markdown-preview'),
+	
+	/**
+		Hides the old layer and display the new layer using styles
+	*/
+	overlap = function($oldLayer, $newLayer) {
+		$oldLayer.hide();
+		$newLayer.show();
+	}
 	
 	/**
 	 * Get the selected text
@@ -223,6 +242,17 @@ $.fn.markdownEditor = function(options) {
 		replaceSelection(value);
 	};
 
+	$linkForm
+		.on('click', '.markdown-button', function() {
+			overlap($linkForm, $toolbar);
+		})
+		.on('click', '.accept', function() {
+			var selection = getSelection().text;
+			replaceSelection('[' + selection + '](' + selection + ' "' + selection + '")');
+			onChange();
+			pushHistory();
+	});
+
 	$toolbar
 		.on('click', '.markdown-button-b', function() {
 			updateSelection({
@@ -241,10 +271,7 @@ $.fn.markdownEditor = function(options) {
 			pushHistory();
 		})
 		.on('click', '.markdown-button-a', function() {
-			var selection = getSelection().text;
-			replaceSelection('[' + selection + '](' + selection + ' "' + selection + '")');
-			onChange();
-			pushHistory();
+			overlap($toolbar, $linkForm);
 		})
 		.on('click', '.markdown-button-pre', function() {
 			updateSelection({
