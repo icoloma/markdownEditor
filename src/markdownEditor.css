@@ -5,6 +5,12 @@
 	height: 350px;
 	vertical-align: top;
 }
+.cols .markdown-preview {
+	margin-left: 10px;
+}
+.markdown-preview {
+	background: transparent url(markdown-preview-bg.gif) repeat 0 20px;
+}
 .rows .markdown-editor, .rows .markdown-preview {
 	width: 400px;
 	padding: 10px;
@@ -18,7 +24,7 @@
 	border-top: 3px solid #eee;
 	border-bottom: 3px solid #eee;
 }
-.markdown-button {
+.md-btn {
 	display: inline-block;
 	width: 16px;
 	height: 16px;
@@ -28,21 +34,24 @@
 	background: #fff url(markdown-sprite.png) no-repeat 0 0;
 	padding: 4px;
 }
-.markdown-button:hover {
+.md-btn[disabled] {
+	opacity: .3;
+}
+.md-btn:hover:not([disabled]) {
 	border-color: #ccc;
 	background-color: #eee;
 }
-.markdown-button-i { background-position: -24px 0; }
-.markdown-button-a { background-position: -48px 0; }
-.markdown-button-blockquote { background-position: -72px 0; }
-.markdown-button-pre { background-position: -96px 0; }
-.markdown-button-img { background-position: -120px 0; }
-.markdown-button-h { background-position: -144px 0; }
-.markdown-button-ol { background-position: -168px 0; }
-.markdown-button-ul { background-position: -192px 0; }
-.markdown-button-undo { background-position: -216px 0; }
-.markdown-button-redo { background-position: -240px 0; }
-.markdown-button-help { background-position: -264px 0; }
+.md-btn-i { background-position: -24px 0; }
+.md-btn-a { background-position: -48px 0; }
+.md-btn-blockquote { background-position: -72px 0; }
+.md-btn-pre { background-position: -96px 0; }
+.md-btn-img { background-position: -120px 0; }
+.md-btn-h { background-position: -144px 0; }
+.md-btn-ol { background-position: -168px 0; }
+.md-btn-ul { background-position: -192px 0; }
+.md-btn-undo { background-position: -216px 0; }
+.md-btn-redo { background-position: -240px 0; }
+.md-btn-help { background-position: -264px 0; }
 
 /** if you are using jquery-ui, you already have this */
 .ui-helper-hidden-accessible { position: absolute !important; clip: rect(1px 1px 1px 1px); clip: rect(1px,1px,1px,1px); }
