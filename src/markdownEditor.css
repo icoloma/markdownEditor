@@ -20,9 +20,10 @@
 	resize: vertical;
 }
 
-.markdown-toolbar {
+.markdown-toolbar, .md-link-form {
 	border-top: 3px solid #eee;
 	border-bottom: 3px solid #eee;
+	height: 22px;
 }
 .md-btn {
 	display: inline-block;
@@ -31,7 +32,7 @@
 	margin: 0 2px;
 	border: 1px solid #fff;
 	border-radius: 2px;
-	background: #fff url(markdown-sprite.png) no-repeat 0 0;
+	background: #fff url(markdown_gui.png) no-repeat 0 0;
 	padding: 4px;
 }
 .md-btn[disabled] {
@@ -41,17 +42,20 @@
 	border-color: #ccc;
 	background-color: #eee;
 }
-.md-btn-i { background-position: -24px 0; }
-.md-btn-a { background-position: -48px 0; }
-.md-btn-blockquote { background-position: -72px 0; }
-.md-btn-pre { background-position: -96px 0; }
-.md-btn-img { background-position: -120px 0; }
-.md-btn-h { background-position: -144px 0; }
-.md-btn-ol { background-position: -168px 0; }
-.md-btn-ul { background-position: -192px 0; }
-.md-btn-undo { background-position: -216px 0; }
-.md-btn-redo { background-position: -240px 0; }
-.md-btn-help { background-position: -264px 0; }
+.md-btn-b { background-position: 8px 4px; }
+.md-btn-i { background-position: -16px 4px; }
+.md-btn-a { background-position: -38px 4px; }
+.md-btn-blockquote { background-position: -66px 4px; }
+.md-btn-pre { background-position: -91px 4px; }
+.md-btn-img { background-position: -114px 4px; }
+.md-btn-h { background-position: -138px 4px; }
+.md-btn-ul { background-position: -164px 4px; }
+.md-btn-undo { background-position: -190px 4px; }
+.md-btn-redo { background-position: -212px 4px; }
+.md-btn-help { background-position: -239px 4px; }
+.md-btn-accept { background-position: -262px 4px; }
+.md-btn-cancel { background-position: -288px 4px; }
+.md-input { vertical-align: top; }
 
 /** if you are using jquery-ui, you already have this */
 .ui-helper-hidden-accessible { position: absolute !important; clip: rect(1px 1px 1px 1px); clip: rect(1px,1px,1px,1px); }
