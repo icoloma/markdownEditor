@@ -67,6 +67,12 @@ $.fn.markdownEditor = function(options) {
 		// container of the whole thing
 		$container = $('<div class="markdown-container"><div class="markdown-toolbar"></div><textarea class="markdown-editor"></textarea><div class="markdown-preview"></div></div>'),
 		$toolbar = $container.find('.markdown-toolbar'),
+		$linkForm = $('<div class="linkForm">' +
+			'<input placeholder="http://" title="href" data-type="href">' +
+			'<input placeholder="Title" title="title" data-type="title">' +
+			'<a class="md-btn accept" title="Accept">V</a>' +
+			'<a class="md-btn cancel" title="Cancel">&#xd7;</a>' +
+		'</div>'),
 		$editor = $container.find('.markdown-editor'),
 		$preview = $container.find('.markdown-preview')
 		;
@@ -236,6 +242,28 @@ $.fn.markdownEditor = function(options) {
 		replaceSelection(value);
 	};
 
+	var ondAddLink = function(isImage) {
+		$toolbar.hide();
+		$toolbar.after($linkForm);
+		$linkForm.on('click', '.accept', function() {
+			var $href = $linkForm.find('[data-type=href]'),
+				$title = $linkForm.find('[data-type=title]'),
+				href = $href.val(),
+				title = $title.val() || href
+			;
+			replaceSelection((isImage? '!' : '') + '[' + title + '](' + href + ' "' + title + '")');
+			pushHistory();
+			$href.val('');
+			$title.val('');
+			$linkForm.remove();
+			$toolbar.show();
+		})
+		.on('click', '.cancel', function() {
+			$linkForm.remove();
+			$toolbar.show();
+		});
+	};
+
 	$toolbar
 		.on('click', '.md-btn-b', function() {
 			updateSelection({
@@ -252,9 +280,7 @@ $.fn.markdownEditor = function(options) {
 			pushHistory();
 		})
 		.on('click', '.md-btn-a', function() {
-			var selection = getSelection().text;
-			replaceSelection('[' + selection + '](' + selection + ' "' + selection + '")');
-			pushHistory();
+			ondAddLink();
 		})
 		.on('click', '.md-btn-pre', function() {
 			updateSelection({
@@ -270,6 +296,9 @@ $.fn.markdownEditor = function(options) {
 				notBilateral: true
 			});
 			pushHistory();
+		})
+		.on('click', '.md-btn-img', function() {
+			ondAddLink(true);
 		})
 		.on('click', '.md-btn-h', function() {
 			updateSelection({
