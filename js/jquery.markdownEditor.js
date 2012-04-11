@@ -1,3 +1,16 @@
+/*
+Markdown Editor by Nacho and Carlos Coloma.
+This work is based on showdown by John Fraser and markdown by John Gruber.
+The license is MIT. Use it however you please.
+
+Options:
+* resources: JSON object with all the i18n entries
+* buttons: a list of buttons to use
+* value: The initial value of the textarea
+* historyRate: the amount of time (in milliseconds) without user input that triggers a new entry in the history
+* renderRate: the amount of time (in milliseconds) without user input that triggers a re-render HTML
+*/
+
 (function($){
 	
 /*
@@ -20,37 +33,26 @@ $.fn.input = function(fn) {
   });
 };
 
-/*
-Markdown Editor by Nacho Coloma.
-This work is based on showdown by John Fraser and markdown by John Gruber.
-The license is MIT. Use it however you please.
-
-Options:
-* resources: JSON object with all the i18n entries
-* buttons: a list of buttons to use
-* value: The initial value to use
-* historyRate: the amount of time (in milliseconds) without user input that triggers a new entry in the history
-* renderRate: the amount of time (in milliseconds) without user input that triggers a re-render HTML
-*/
 $.fn.markdownEditor = function(options) {
 	
 	options = $.extend({
 		historyRate: 2000,
 		renderRate: 300,
-		buttons: [ 'b', 'i', 'a', 'blockquote', 'pre', 'img', 'h', 'ol', 'ul', 'undo', 'redo', 'help' ],
+		buttons: [ 'b', 'i', 'a', 'blockquote', 'code', 'img', 'h', 'ul', 'undo', 'redo', 'help' ],
 		resources: {
 			'md-btn-b': 'Bold',
 			'md-btn-i': 'Italic',
 			'md-btn-a': 'Create link',
 			'md-btn-blockquote': 'Quote',
-			'md-btn-pre': 'Code',
+			'md-btn-code': 'Code',
 			'md-btn-img': 'Add image',
 			'md-btn-h': 'Header',
-			'md-btn-ol': 'Numbered list',
 			'md-btn-ul': 'Bullet list',
 			'md-btn-undo': 'Undo',
 			'md-btn-redo': 'Redo',
-			'md-btn-help': 'Help'
+			'md-btn-help': 'Help',
+			'md-btn-accept': 'Accept',
+			'md-btn-cancel': 'Cancel'
 		}
 	}, options);
 	
@@ -65,6 +67,12 @@ $.fn.markdownEditor = function(options) {
 		// ShowDown converter
 		converter = new Showdown.converter(),
 
+		// creates the HTML code for a button
+		createButton = function(button) {
+			var name = 'md-btn-' + button;
+			return '<a class="md-btn ' + name + '" title="' + options.resources[name] + '"><span class="md-icon md-icon-' + button + '">' + options.resources[name] + '</span></a>'
+		}
+
 		// container of the whole thing
 		$container = $('<div class="markdown-container"><div class="markdown-toolbar"></div><textarea class="markdown-editor"></textarea><div class="markdown-preview"></div></div>'),
 		$toolbar = $container.find('.markdown-toolbar'),
@@ -73,19 +81,48 @@ $.fn.markdownEditor = function(options) {
 		;
 
 	/*
-	 * getSelection extracted from fieldSelection jQuery plugin by Alex Brem <alex@0xab.cd>
-	 */
-	var e = $editor[0];
-	var getSelection = 
+		getSelection extracted from fieldSelection jQuery plugin by Alex Brem <alex@0xab.cd>
+	*/
+	var e = $editor[0],
+
+	/*
+		@return if block == true, the start of the line containing the current selection
+	*/
+	getStart = function(value, start, block) {
+		if (!block) return start;
+		while (start > 1) {
+			if (value[start - 1] == '\n')
+				break;
+			start--;
+		}
+		return start;
+	},
+
+	getEnd = function(value, end, block) {
+		if (!block) return end;
+		while (end < value.length - 1) {
+			if (value[end] == '\n')
+				break;
+			end++;
+		}
+		return end;
+	},
+
+	/*
+		get the current selection
+	*/
+	getSelection = 
 
 		/* mozilla / dom 3.0 */
-		('selectionStart' in e && function() { 
-			var l = e.selectionEnd - e.selectionStart;
+		('selectionStart' in e && function(block) { 
+			var start = getStart(e.value, e.selectionStart, block);
+			var end = getEnd(e.value, e.selectionEnd, block);
+			var l = end - start;
 			return { 
-				start: e.selectionStart, 
-				end: e.selectionEnd, 
+				start: start, 
+				end: end, 
 				length: l, 
-				text: e.value.substr(e.selectionStart, l) 
+				text: e.value.substr(start, l) 
 			};
 		}) ||
 
@@ -108,10 +145,11 @@ $.fn.markdownEditor = function(options) {
 			re.moveToBookmark(r.getBookmark());
 			rc.setEndPoint('EndToStart', re);
 
+			// TODO: missing the getStart() invocation to select entire lines of text
+
 			return { 
 				start: rc.text.length, 
-				end: rc.text.length + 
-				r.text.length, 
+				end: rc.text.length + r.text.length,
 				length: r.text.length, 
 				text: r.text 
 			};
@@ -127,14 +165,16 @@ $.fn.markdownEditor = function(options) {
 	var replaceSelection = 
 
 		/* mozilla / dom 3.0 */
-		('selectionStart' in e && function(text) { 
-			var start = e.selectionStart;
-			e.value = e.value.substr(0, start) + text + e.value.substr(e.selectionEnd, e.value.length);
+		('selectionStart' in e && function(text, block) { 
+			var start = getStart(e.value, e.selectionStart, block);
+			var end = getEnd(e.value, e.selectionEnd, block);
+			e.value = e.value.substr(0, start) + text + e.value.substr(end, e.value.length);
 			e.selectionStart = start;
 			e.selectionEnd = start + text.length;
 			e.focus();
 		}) ||
 
+		// TODO: missing the getStart() invocation to select entire lines of text
 		/* exploder */
 		(document.selection && function(text) {
 			e.focus();
@@ -156,7 +196,7 @@ $.fn.markdownEditor = function(options) {
 		historyID = setTimeout(function() {
 			if (e.value != history[hcursor]) {
 				history[++hcursor] = e.value;
-				console.log("push " + hcursor + " " + e.value);
+				// console.log("push " + hcursor + " " + e.value);
 				if (history.length > hcursor + 1) { // if 'undo' and then write something, replace the future entries
 					history = history.slice(0, hcursor + 1);
 					$redoBtn.attr('disabled', '');
@@ -173,7 +213,7 @@ $.fn.markdownEditor = function(options) {
 	var popHistory = function() {
 		if (hcursor) {
 			e.value = history[--hcursor];
-			console.log("pop " + hcursor + " " + e.value);
+			// console.log("pop " + hcursor + " " + e.value);
 			$redoBtn.removeAttr('disabled');
 			renderHTML();
 		} 
@@ -186,7 +226,7 @@ $.fn.markdownEditor = function(options) {
 	var redoHistory = function() {
 		if (hcursor < history.length - 1) {
 			e.value = history[++hcursor];
-			console.log("redo " + hcursor + " " + e.value);
+			// console.log("redo " + hcursor + " " + e.value);
 			if (hcursor === history.length - 1)
 				$redoBtn.attr('disabled', '');
 			renderHTML();
@@ -211,89 +251,234 @@ $.fn.markdownEditor = function(options) {
 
 	// insert buttons
 	$.each(options.buttons, function(index, button) {
-		var name = 'md-btn-' + button;
-		$toolbar.append('<a class="md-btn ' + name + '" title="' + options.resources[name] + '"><span class="ui-helper-hidden-accessible">' + options.resources[name] + '</span></a>');
+		$toolbar.append(createButton(button));
 	});
 	var $undoBtn = $toolbar.find('.md-btn-undo');
 	var $redoBtn = $toolbar.find('.md-btn-redo');
 
 	/**
-		options: 
-		- mark to set/remove. i.e.: '**'
-		- pattern. Pattern to check if the mark must be set or removed
-		- notBilateral: add the mark only as prefix, not suffix. Default is false.
+		asks the user for a link title and href
 	*/
-	var updateSelection = function(options) {
-		var selection = getSelection().text;
-		var value = options.mark + 
-			selection + 
-			(options.notBilateral? '' : options.mark)
-		;
-		if (options.regex.exec(selection)) {
-			value = selection.substring(options.mark.length, 
-				(options.notBilateral? selection.length : selection.length - options.mark.length)
-			);
+	var addLink = function(callback) {
+		var 
+			selection = getSelection().text.replace(/\n/g, '').trim(),
+			$linkForm = $(
+			'<form class="md-link-form" action="#">' +
+				'<input placeholder="Title" type="text" class="md-input md-title">' +
+				'<input placeholder="http://" type="url" class="md-input md-href">' +
+				createButton('accept') + createButton('cancel') +
+			'</form>'
+			),
+			cancel = function() {
+				$linkForm.remove();
+				$toolbar.show();
+				return false;
+			},
+			accept = function() {
+				var $href = $linkForm.find('.md-href'),
+					$title = $linkForm.find('.md-title'),
+					href = $href.val(),
+					title = $title.val() || href
+				;
+				replaceSelection(callback(title, href));
+				pushHistory();
+				$linkForm.remove();
+				$toolbar.show();
+				return false;
+			};
+		$toolbar
+			.hide()
+			.after($linkForm);
+		$linkForm
+			.on('click', '.md-btn-accept', accept)
+			.on('click', '.md-btn-cancel', cancel)
+			.on('keyup', '.md-input', function(e) {
+				if (e.keyCode === 13)
+					accept();
+				else if (e.keyCode === 27)
+					cancel();
+			});
+		if (!selection || /^http(s?):\/\//.exec(selection)) {
+			$linkForm.find('.md-href').val(selection);
+			$linkForm.find('.md-title').focus()
+		} else {
+			$linkForm.find('.md-title').val(selection);
+			$linkForm.find('.md-href').focus()
 		}
-		replaceSelection(value);
+		
 	};
 
-	$toolbar
-		.on('click', '.md-btn-b', function() {
-			updateSelection({
-				mark: '**', 
-				regex: /^\*\*.*\*\*$/
-			});
-			pushHistory();
-		})
-		.on('click', '.md-btn-i', function() {
-			updateSelection({
-				mark: '*', 
-				regex: /^\*(\*\*)?[^*]*(\*\*)?\*$/
-			});
-			pushHistory();
-		})
-		.on('click', '.md-btn-a', function() {
-			var selection = getSelection().text;
-			replaceSelection('[' + selection + '](' + selection + ' "' + selection + '")');
-			pushHistory();
-		})
-		.on('click', '.md-btn-pre', function() {
-			updateSelection({
-				mark: '`', 
-				regex: /^`[^`]*`$/
-			});
-			pushHistory();
-		})
-		.on('click', '.md-btn-blockquote', function() {
-			updateSelection({
-				mark: '\n>', 
-				regex: /^\n>.*$/, 
-				notBilateral: true
-			});
-			pushHistory();
-		})
-		.on('click', '.md-btn-h', function() {
-			updateSelection({
-				mark: '#', 
-				regex: /^#.*$/,
-				notBilateral: true
-			});
-			pushHistory();
-		})
-		.on('click', '.md-btn-ul', function() {
-			var set = updateSelection({
-				mark: '\n* ', 
-				regex: /^\n\*\s.*$/, 
-				notBilateral: true
-			});
-			pushHistory();
-		})
-		.on('click', '.md-btn-undo', popHistory)
-		.on('click', '.md-btn-redo', redoHistory)
-		.on('click', '.md-btn-help', function() {
-			window.open('http://en.wikipedia.org/wiki/Markdown');
-		})
+	/**
+		options: 
+		- regex: Pattern to check if the mark must be set or removed
+		- modify: Callback to modify the selection
+		- undo: Callback to undo this modification
+		- block: use entire lines no matter what is selected
+	*/
+	var updateSelection = function(o) {
+		var selection = getSelection(o.block).text;
+		// for commands affecting a single line, ignore multiline selections
+		if (!o.block && /\n/.exec(selection))
+			return;
+		var parts = o.regex.exec(selection);
+		var value = !parts? o.modify(selection) :
+			o.undo? o.undo(selection, o) : 
+			parts[1];
+		replaceSelection(value, o.block);
+	};
+
+	var commands = [
+		{
+			cmd: 'b',
+			handler: function() {
+				updateSelection({
+					modify: function(value) {
+						return '**' + value.trim() + '**';
+					},
+					regex: /^\*\*(.*)\*\*$/
+				});
+				pushHistory();
+			}
+		},
+		{
+			cmd: 'i',
+			handler: function() {
+				updateSelection({
+					modify: function(value) {
+						return '*' + value.trim() + '*';
+					},
+					regex: /^\*((\*\*)?([^*]*)(\*\*))?\*$/
+				});
+				pushHistory();
+			}
+		},
+		{
+			cmd: 'a',
+			shortcut: '⌘+k, ctrl+k',
+			handler: function() {
+				addLink(function(title, href) {
+					return '[' + title + '](' + href + ' "' + title + '")';
+				});
+			}
+		},
+		{
+			cmd: 'code',
+			shortcut: 'shift+⌘+p, shift+ctrl+p',
+			handler: function() {
+				updateSelection({
+					modify: function(value) {
+						return '`' + value + '`';
+					},
+					regex: /^`([^`]*)`$/
+				});
+				pushHistory();
+			}
+		},
+		{
+			cmd: 'blockquote',
+			shortcut: '⌘+\', ctrl+\'',
+			handler: function() {
+				updateSelection({
+					modify: function(value) {
+						return '> ' + value.replace(/\n/g, '\n> ');
+					},
+					undo: function(value) {
+						return value.replace(/(^|\n)>[ \t]*(.*)/g, "$1$2");
+					},
+					regex: /((^|\n)>(.*))+$/,
+					block: true
+				});
+				pushHistory();
+			}
+		},
+		{
+			cmd: 'img',
+			shortcut: 'shift+⌘+i, shift+ctrl+i',
+			handler: function() {
+				addLink(function(title, href) {
+					return '![' + title + '](' + href + ' "' + title + '")';
+				});
+			}
+		},
+		{
+			cmd: 'h',
+			handler: function() {
+				updateSelection({
+					modify: function(value) {
+						return '#' + value;
+					},
+					regex: /^#(.*)$/,
+					block: true
+				});
+				pushHistory();
+			}
+		},
+		{
+			cmd: 'ul',
+			shortcut: 'shift+⌘+l, shift+ctrl+l',
+			handler: function() {
+				updateSelection({
+					modify: function(value) {
+						return '* ' + value.replace(/\n/g, '\n* ');
+					},
+					undo: function(value) {
+						return value.replace(/^[\s\t]*\*[ \t]*/mg, "");
+					},
+					regex: /^([\s\t]*\*.*)*$/,
+					block: true
+				});
+				pushHistory();
+			}
+		},
+		{
+			cmd: 'undo',
+			shortcut: '⌘+z, ctrl+z',
+			handler: popHistory
+		},
+		{
+			cmd: 'redo',
+			shortcut: '⌘+y, ctrl+y',
+			handler: redoHistory
+		},
+		{
+			cmd: 'help',
+			shortcut: 'shift+⌘+h, shift+ctrl+h',
+			handler: function() {
+				window.open('http://en.wikipedia.org/wiki/Markdown');
+			}
+		}
+	];
+
+	// disable the default behaviour of filtering key bindings when we are inside the textarea
+	key.filter = function (event){
+		var tagName = (event.target || event.srcElement).tagName;
+		return !(tagName == 'INPUT' || tagName == 'SELECT');
+	}
+
+	// asigna handler para cada comando
+	for (var i = 0; i < commands.length; i++) {
+		var action = commands[i],
+			cmd = action.cmd,
+			handler = action.handler
 		;
+
+		// mouse
+		$toolbar.on('click', '.md-btn-' + cmd, handler);
+
+		// keyboard
+		key(action.shortcut || '⌘+' + cmd + ', ctrl+' + cmd, 'markdown', handler);
+	}
+
+	$editor
+		.focusin(function() {
+			// set markdown scope for key bindings
+			key.setScope('markdown');
+		})
+		.focusout(function() {
+			// set default scope
+			key.setScope();
+		})
+	;
 
 	// this for testing only
 	if (options.internals) {

@@ -11,6 +11,12 @@
     <link href="js/google-code-prettify/prettify.css" type="text/css" rel="stylesheet">
 
     <title>MarkdownEditor</title>
+
+    <style>
+    .cols .markdown-editor, .cols .markdown-preview {
+      width: 294px;
+    }
+    </style>
   </head>
 
   <body>
@@ -42,8 +48,9 @@
 
 <pre class="prettyprint"><code>&lt;div class="cols">&lt;/div>
 
-&lt;script src="js/jquery.js">&lt;/script>
-&lt;script src="js/showdown.js">&lt;/script>
+&lt;script src="js/lib/jquery.js">&lt;/script>
+&lt;script src="js/lib/showdown.js">&lt;/script>
+&lt;script src="js/lib/keymaster.js">&lt;/script>
 &lt;script src="js/jquery.markdownEditor.js">&lt;/script>
 &lt;script>
 $('.container').markdownEditor({
@@ -78,7 +85,8 @@ $('.container').markdownEditor({
 
           <!-- markdownEditor starts Here -->
           <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-          <script src="js/showdown.js"></script>
+          <script src="js/lib/showdown.js"></script>
+          <script src="js/lib/keymaster.js"></script>
           <script src="js/jquery.markdownEditor.js"></script>
           <script>
           prettyPrint();
