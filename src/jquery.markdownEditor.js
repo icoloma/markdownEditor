@@ -357,7 +357,7 @@ $.fn.markdownEditor = function(options) {
 			shortcut: '⌘+k, ctrl+k',
 			handler: function() {
 				addLink(function(title, href) {
-					return '[' + title + '](' + href + ' "' + title + '")';
+					return '[' + title + '](' + href + ')';
 				});
 			}
 		},
