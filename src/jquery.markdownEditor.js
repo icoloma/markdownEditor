@@ -230,6 +230,7 @@ $.fn.markdownEditor = function(options) {
 			if (hcursor === history.length - 1)
 				$redoBtn.attr('disabled', '');
 			renderHTML();
+			$undoBtn.removeAttr('disabled');
 		}
 	}
 
@@ -243,6 +244,7 @@ $.fn.markdownEditor = function(options) {
 			clearTimeout(renderID);
 			renderID = setTimeout(function() {
 				$preview.html(converter.makeHtml(e.value));
+				$editor.trigger('md.change', e);
 			}, options.renderRate);
 		} else {
 			$preview.html(converter.makeHtml(e.value));
@@ -501,5 +503,6 @@ $.fn.markdownEditor = function(options) {
 	this.html($container);
 
 }
+
 
 })(jQuery);
