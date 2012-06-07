@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="MarkdownEditor : A jQuery-based markdown javascript editor" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="js/markdownEditor.css">
+    <link href="js/google-code-prettify/prettify.css" type="text/css" rel="stylesheet">
+
+    <title>MarkdownEditor</title>
+
+    <style>
+    .cols .markdown-editor, .cols .markdown-preview {
+      width: 294px;
+    }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/icoloma/markdownEditor">Fork Me on GitHub</a>
+
+          <h1 id="project_title">MarkdownEditor</h1>
+          <h2 id="project_tagline">A jQuery-based markdown JavaScript editor</h2>
+
+          <section id="downloads">
+            <a class="zip_download_link" href="https://github.com/icoloma/markdownEditor/zipball/master">Download this project as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/icoloma/markdownEditor/tarball/master">Download this project as a tar.gz file</a>
+          </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+
+        <h2>Live example</h2>
+
+        <div class="cols"></div>
+
+        <h2>Source code</h2>
+
+<pre class="prettyprint"><code>&lt;div class="cols">&lt;/div>
+
+&lt;script src="js/lib/jquery.js">&lt;/script>
+&lt;script src="js/lib/showdown.js">&lt;/script>
+&lt;script src="js/lib/keymaster.js">&lt;/script>
+&lt;script src="js/jquery.markdownEditor.js">&lt;/script>
+&lt;script>
+$('.container').markdownEditor({
+  value: '##Yet Another Markdown Editor##(insert yadda yadda here)'
+});
+&lt;/script>
+</code></pre>
+
+
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">MarkdownEditor by <a href="https://github.com/icoloma">icoloma</a> and <a href="https://github.com/ccoloma">ccoloma</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-3159223-4");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+          <script src="js/google-code-prettify/prettify.js"></script>
+
+          <!-- markdownEditor starts Here -->
+          <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+          <script src="js/lib/showdown.js"></script>
+          <script src="js/lib/keymaster.js"></script>
+          <script src="js/jquery.markdownEditor.js"></script>
+          <script>
+          prettyPrint();
+          $('.cols').markdownEditor({
+                value: '##MarkdownEditor##\n\n' +
+                        '[Link me!](http://icanhascheezburger.com "Show me the kitties")\n\n' +
+                        'Lots of *stuff* to **test**, like quotes:\n\n' +
+                        '> Two things are infinite: the universe and human stupidity; and I am not sure about the universe.\n\n' +
+                        'Code \n `[foo, bar, beer]` \n\n' +
+                        'UnorderedLists \n\n* Item1 \n* Item2\n\n' +
+                        'OrderedLists \n\n1. Item1 \n2. Item2'
+        });
+          </script>
+  </body>
+</html>
