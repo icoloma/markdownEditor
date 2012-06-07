@@ -33,9 +33,9 @@
   display: inline-block;
   vertical-align: middle;
   margin: 0 2px;
-  border: 1px solid #fff;
+  border: 1px solid transparent;
   border-radius: 2px;
-  background: #fff;
+  background: transparent;
   padding: 2px 4px;
   cursor: pointer;
 }
