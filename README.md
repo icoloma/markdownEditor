@@ -2,12 +2,14 @@
 This is another markdown editor that is based on Showdown, but **NOT** on WMD. The idea is to make a lightweight, jQuery-based editor with most of the features but none of the baggage. The result is an uncompressed 8KB file.
 
 You can see a live demo [here](http://icoloma.github.com/markdownEditor).
+
+[![Analytics](https://ga-beacon.appspot.com/UA-3159223-5/icoloma/queue4gae)](https://github.com/icoloma/queue4gae)
+
 ## Features
 
-* All the typical buttons are there: bold, italics, etc.
+* All the typical stuff: bold, italics, etc.
 * Undo and redo
 * Keyboard shortcuts
-* Internationalized button (hover) titles
 
 ## The options
 
